@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bio Intelligence - CS Ticket Trend Sep2025-Feb2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--surface:#181c27;--surface2:#1e2335;--border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#7c82a0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:40px;max-width:1100px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.hd h1{font-size:20px;font-weight:500}.hd p{font-size:12px;color:var(--muted);margin-top:4px;font-family:monospace}
+.badge{font-family:monospace;font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:36px}
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.mc-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.mc-value{font-size:28px;font-weight:300;font-family:monospace;letter-spacing:-1px}
+.mc-value.red{color:#ff6b52}.mc-value.amber{color:#f5a623}
+.mc-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:16px}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:16px}
+.pt{font-size:13px;font-weight:500}.ps{font-size:11px;color:var(--muted);margin-top:2px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;flex-shrink:0}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-family:monospace}
+.ll{width:20px;height:2px;border-radius:1px;flex-shrink:0}
+.ld{width:20px;height:0;border-top:2px dashed;flex-shrink:0}
+.cw{position:relative;width:100%}
+footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);font-family:monospace;display:flex;justify-content:space-between}
+</style></head>
+<body>
+<header><div class="hd"><h1>Bio Intelligence - CS Ticket Quality Trend</h1><p>Sep 2025 - Feb 2026 - 60 tickets - 14-day sliding window</p></div><div class="badge">Generated 2026-05-29</div></header>
+<div class="metrics"><div class="mc"><div class="mc-label">Overall P50 first response</div><div class="mc-value red">11.6d</div><div class="mc-sub">target: 1d (P0) / 3d (P1)</div></div><div class="mc"><div class="mc-label">SLA compliance</div><div class="mc-value red">5%</div><div class="mc-sub">1 of 20 engaged / 40 passive</div></div><div class="mc"><div class="mc-label">Peak aging backlog</div><div class="mc-value amber">21</div><div class="mc-sub">tickets 30+ days no response</div></div></div>
+<div class="panel"><div class="ph"><div><div class="pt">First response time + SLA compliance</div><div class="ps">Days to first Bio Intel comment - engaged tickets only</div></div><div class="legend"><div class="li"><div class="ll" style="background:#4d9fff"></div>P50</div><div class="li"><div class="ll" style="background:#f5a623"></div>P90</div><div class="li"><div class="ll" style="background:#ff6b52"></div>P95</div><div class="li"><div class="ld" style="border-color:#2dd4a0"></div>SLA%</div></div></div><div class="cw" style="height:260px"><canvas id="c1"></canvas></div></div>
+<div class="panel"><div class="ph"><div><div class="pt">Unanswered backlog 0-30 days</div><div class="ps">No Bio Intel response by age bucket</div></div><div class="legend"><div class="li"><div class="ll" style="background:#2dd4a0"></div>0-7d</div><div class="li"><div class="ll" style="background:#f5a623"></div>8-30d</div></div></div><div class="cw" style="height:200px"><canvas id="c2"></canvas></div></div>
+<div class="panel"><div class="ph"><div><div class="pt">Aging tickets 30+ days</div><div class="ps">Dashed line = alert threshold (5)</div></div><div class="legend"><div class="li"><div class="ll" style="background:#ff6b52"></div>30+d</div></div></div><div class="cw" style="height:180px"><canvas id="c3"></canvas></div></div>
+<footer><span>Bio Intelligence - ticket-stats - Claude</span><span>60 tickets - Sep 2025-Feb 2026</span></footer>
+<script>
+const W=['Sep 7','Sep 14','Sep 21','Sep 28','Oct 5','Oct 12','Oct 19','Oct 26','Nov 2','Nov 9','Nov 16','Nov 23','Nov 30','Dec 7','Dec 14','Dec 21','Dec 28','Jan 4','Jan 11','Jan 18','Jan 25','Feb 1','Feb 8','Feb 15','Feb 22','Feb 28'];
+const p50=[null,null,72,null,null,4,11.5,null,null,null,11.6,11.6,11.6,11.6,6.9,6.9,null,null,null,9.5,17,17,11.6,11.6,11.6,11.6];
+const p90=[null,null,72,null,null,22.6,22.6,null,null,null,58.9,58.9,58.9,58.9,19,19,null,null,null,17,17,58.9,58.9,58.9,58.9,58.9];
+const p95=[null,null,72,null,null,22.6,22.6,null,null,null,59,59,59,59,19,19,null,null,null,17,17,59,59,59,59,59];
+const sla=[0,0,0,0,0,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,5,5,5,5];
+const a7=[2,3,2,2,3,4,3,3,4,5,4,5,4,4,5,4,3,4,5,5,4,4,5,4,3,2];
+const a30=[3,4,5,5,6,7,7,8,8,9,10,10,10,11,10,9,8,8,9,10,10,11,12,11,10,9];
+const aO=[0,0,1,2,3,4,5,6,7,8,9,10,11,11,12,13,13,13,14,15,16,17,18,19,20,21];
+const gc='rgba(255,255,255,0.05)',tc='#5a6080';
+const xA={ticks:{color:tc,font:{size:10},autoSkip:false,maxRotation:45,callback:(v,i)=>i%2===0?W[i]:''},grid:{color:gc},border:{color:'rgba(255,255,255,0.08)'}};
+const yB={ticks:{color:tc,font:{size:10}},grid:{color:gc},border:{color:'rgba(255,255,255,0.08)'}};
+const tt={backgroundColor:'rgba(15,17,23,0.95)',titleColor:'#e8eaf0',bodyColor:'#7c82a0',borderColor:'rgba(255,255,255,0.1)',borderWidth:1};
+new Chart(document.getElementById('c1'),{data:{labels:W,datasets:[{type:'line',label:'P50',data:p50,borderColor:'#4d9fff',backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointBackgroundColor:'#4d9fff',tension:0.3,spanGaps:false,yAxisID:'y1'},{type:'line',label:'P90',data:p90,borderColor:'#f5a623',backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointBackgroundColor:'#f5a623',tension:0.3,spanGaps:false,yAxisID:'y1'},{type:'line',label:'P95',data:p95,borderColor:'#ff6b52',backgroundColor:'transparent',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#ff6b52',tension:0.3,spanGaps:false,yAxisID:'y1'},{type:'line',label:'SLA%',data:sla,borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.06)',borderWidth:1.5,borderDash:[5,3],pointRadius:2,tension:0.3,fill:'origin',spanGaps:true,yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,...tt}},scales:{x:xA,y1:{...yB,position:'left',min:0,max:80,title:{display:true,text:'days',color:tc,font:{size:10}}},y2:{position:'right',min:0,max:100,ticks:{color:'#2dd4a0',font:{size:10},callback:v=>v+'%'},grid:{display:false},border:{display:false}}}}});
+new Chart(document.getElementById('c2'),{type:'line',data:{labels:W,datasets:[{label:'0-7d',data:a7,borderColor:'#2dd4a0',backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointBackgroundColor:'#2dd4a0',tension:0.4,fill:false,spanGaps:true},{label:'8-30d',data:a30,borderColor:'#f5a623',backgroundColor:'transparent',borderWidth:2,pointRadius:3,pointBackgroundColor:'#f5a623',tension:0.4,fill:false,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,...tt}},scales:{x:xA,y:{...yB,min:0}}}});
+const rl={id:'rl',afterDraw(c){const{ctx,scales:{y}}=c;if(!y)return;const yv=y.getPixelForValue(5);ctx.save();ctx.strokeStyle='rgba(255,107,82,0.45)';ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(c.chartArea.left,yv);ctx.lineTo(c.chartArea.right,yv);ctx.stroke();ctx.restore();}};
+new Chart(document.getElementById('c3'),{type:'line',data:{labels:W,datasets:[{label:'30+d',data:aO,borderColor:'#ff6b52',backgroundColor:'rgba(255,107,82,0.07)',borderWidth:2,pointRadius:3,pointBackgroundColor:'#ff6b52',tension:0.3,fill:'origin',spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,...tt}},scales:{x:xA,y:{...yB,min:0}}},plugins:[rl]});
+</script>
+</body>
+</html>
