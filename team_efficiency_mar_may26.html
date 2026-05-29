@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bio Intelligence – Team Efficiency · Mar–May 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f1117;--surface:#181c27;--surface2:#1e2335;--border:rgba(255,255,255,0.07);--text:#e8eaf0;--muted:#7c82a0;--red:#ff6b52;--amber:#f5a623;--green:#2dd4a0;--blue:#4d9fff}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:40px;max-width:1100px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.hd h1{font-size:20px;font-weight:500}.hd p{font-size:12px;color:var(--muted);margin-top:4px;font-family:monospace}
+.badge{font-family:monospace;font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.kpi-value{font-size:28px;font-weight:300;font-family:monospace;letter-spacing:-1px}
+.kpi-value.red{color:var(--red)}.kpi-value.amber{color:var(--amber)}.kpi-value.green{color:var(--green)}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:16px}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:16px}
+.pt{font-size:13px;font-weight:500;color:var(--text)}.ps{font-size:11px;color:var(--muted);margin-top:2px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;flex-shrink:0;align-items:center}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-family:monospace}
+.lsq{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+.ll{width:20px;height:2px;border-radius:1px;flex-shrink:0}
+.cw{position:relative;width:100%}
+footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);font-family:monospace;display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd">
+    <h1>Bio Intelligence · Team Efficiency</h1>
+    <p>Mar – May 2026 · 50 tickets · weekly view</p>
+  </div>
+  <div class="badge">Generated 29 May 2026 12:30 CET</div>
+</header>
+
+<div class="kpis">
+  <div class="kpi">
+    <div class="kpi-label">Avg engagement rate</div>
+    <div class="kpi-value red">14%</div>
+    <div class="kpi-sub">7 of 50 tickets got a response</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Median response time (P50)</div>
+    <div class="kpi-value amber">6.7d</div>
+    <div class="kpi-sub">engaged tickets only · ↓ from 11.6d</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Unanswered 14+ days (end of period)</div>
+    <div class="kpi-value red">40</div>
+    <div class="kpi-sub">tickets with no response for 2+ weeks</div>
+  </div>
+</div>
+
+<!-- Panel 1: Engagement rate -->
+<div class="panel">
+  <div class="ph">
+    <div>
+      <div class="pt">Engagement rate by week</div>
+      <div class="ps">% of that week's tickets that received a Bio Intel response within 14 days · green ≥ 50%, red < 50%</div>
+    </div>
+    <div class="legend">
+      <div class="li"><div class="lsq" style="background:#2dd4a0"></div>≥ 50%</div>
+      <div class="li"><div class="lsq" style="background:#ff6b52"></div>&lt; 50%</div>
+    </div>
+  </div>
+  <div class="cw" style="height:220px"><canvas id="c1" role="img" aria-label="Engagement rate by week"></canvas></div>
+</div>
+
+<!-- Panel 2: Response time -->
+<div class="panel">
+  <div class="ph">
+    <div>
+      <div class="pt">Median first response time (P50) by week</div>
+      <div class="ps">Days from ticket creation to first Bio Intel comment · only weeks with engaged tickets · lower is better</div>
+    </div>
+    <div class="legend">
+      <div class="li"><div class="ll" style="background:#4d9fff"></div>P50 (days)</div>
+      <div class="li"><div class="ll" style="background:rgba(255,107,82,0.5);border-top:2px dashed #ff6b52;height:0;width:20px"></div>14d SLA target</div>
+    </div>
+  </div>
+  <div class="cw" style="height:220px"><canvas id="c2" role="img" aria-label="Response time by week"></canvas></div>
+</div>
+
+<!-- Panel 3: Backlog -->
+<div class="panel">
+  <div class="ph">
+    <div>
+      <div class="pt">Unanswered backlog 14+ days</div>
+      <div class="ps">Cumulative count of tickets with no Bio Intel response for more than 14 days · growing = problem worsening</div>
+    </div>
+    <div class="legend">
+      <div class="li"><div class="ll" style="background:#ff6b52"></div>backlog count</div>
+    </div>
+  </div>
+  <div class="cw" style="height:200px"><canvas id="c3" role="img" aria-label="14+ day backlog by week"></canvas></div>
+</div>
+
+<footer>
+  <span>Bio Intelligence · ticket-stats skill · Claude</span>
+  <span>Mar 2 – May 29 2026 · 50 tickets</span>
+</footer>
+
+<script>
+const weeks = ['Mar 2','Mar 9','Mar 16','Mar 23','Mar 30','Apr 6','Apr 13','Apr 20','Apr 27','May 4','May 11','May 18','May 25'];
+const created =  [9, 2,  1,  4,  2,  2,  5,  3,  5,  7,  5,  3,  1];
+const engaged14= [0, 1,  1,  0,  1,  0,  0,  0,  0,  1,  2,  1,  0];
+const engRate =  [0,50,100,  0, 50,  0,  0,  0,  0, 14, 40, 33,  0];
+const p50 =      [null, 0.8, 2.6, 48.4, 14.8, null, null, null, null, 6.7, 1.0, 8.9, null];
+const backlog =  [0, 0,  9, 10, 10, 14, 16, 18, 23, 26, 31, 37, 40];
+
+const gc = 'rgba(255,255,255,0.05)', tc = '#5a6080';
+const yB = {ticks:{color:tc,font:{size:10}},grid:{color:gc},border:{color:'rgba(255,255,255,0.08)'}};
+const xA = {ticks:{color:tc,font:{size:10},autoSkip:false,maxRotation:45,callback:(v,i)=>i%2===0?weeks[i]:''},grid:{color:gc},border:{color:'rgba(255,255,255,0.08)'}};
+const tt = {backgroundColor:'rgba(15,17,23,0.95)',titleColor:'#e8eaf0',bodyColor:'#7c82a0',borderColor:'rgba(255,255,255,0.1)',borderWidth:1};
+
+// Panel 1 — engagement bar chart, colored by rate
+new Chart(document.getElementById('c1'), {
+  type: 'bar',
+  data: {
+    labels: weeks,
+    datasets: [{
+      label: 'Engagement %',
+      data: engRate,
+      backgroundColor: engRate.map(v => v >= 50 ? 'rgba(45,212,160,0.75)' : v > 0 ? 'rgba(255,107,82,0.75)' : 'rgba(255,107,82,0.3)'),
+      borderColor: engRate.map(v => v >= 50 ? '#2dd4a0' : '#ff6b52'),
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    plugins: {
+      legend: {display: false},
+      tooltip: {
+        ...tt,
+        callbacks: {
+          label: ctx => {
+            const i = ctx.dataIndex;
+            return [
+              'Engagement: ' + ctx.raw + '%',
+              'Tickets created: ' + created[i],
+              'Responded within 14d: ' + engaged14[i]
+            ];
+          }
+        }
+      }
+    },
+    scales: {
+      x: xA,
+      y: {...yB, min:0, max:100, ticks:{...yB.ticks, callback: v => v+'%'}}
+    }
+  }
+});
+
+// Panel 2 — response time line with SLA reference
+const slaPlugin = {
+  id: 'sla',
+  afterDraw(chart) {
+    const {ctx, scales:{y}} = chart;
+    if (!y) return;
+    const yv = y.getPixelForValue(14);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,107,82,0.5)';
+    ctx.setLineDash([6,4]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(chart.chartArea.left, yv);
+    ctx.lineTo(chart.chartArea.right, yv);
+    ctx.stroke();
+    ctx.restore();
+  }
+};
+
+new Chart(document.getElementById('c2'), {
+  type: 'line',
+  data: {
+    labels: weeks,
+    datasets: [{
+      label: 'P50 (days)',
+      data: p50,
+      borderColor: '#4d9fff',
+      backgroundColor: 'rgba(77,159,255,0.1)',
+      borderWidth: 2,
+      pointRadius: p50.map(v => v !== null ? 5 : 0),
+      pointBackgroundColor: p50.map(v => v !== null ? (v <= 14 ? '#2dd4a0' : '#ff6b52') : 'transparent'),
+      pointBorderColor: 'transparent',
+      tension: 0.3,
+      spanGaps: false,
+      fill: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    plugins: {
+      legend: {display: false},
+      tooltip: {
+        ...tt,
+        callbacks: {label: ctx => ctx.raw !== null ? 'P50: ' + ctx.raw.toFixed(1) + ' days' : ''}
+      }
+    },
+    scales: {
+      x: xA,
+      y: {...yB, min: 0, title: {display: true, text: 'days', color: tc, font:{size:10}}}
+    }
+  },
+  plugins: [slaPlugin]
+});
+
+// Panel 3 — backlog area chart
+new Chart(document.getElementById('c3'), {
+  type: 'line',
+  data: {
+    labels: weeks,
+    datasets: [{
+      label: 'Backlog 14+d',
+      data: backlog,
+      borderColor: '#ff6b52',
+      backgroundColor: 'rgba(255,107,82,0.08)',
+      borderWidth: 2,
+      pointRadius: 4,
+      pointBackgroundColor: '#ff6b52',
+      tension: 0.3,
+      fill: 'origin',
+      spanGaps: true,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    plugins: {
+      legend: {display: false},
+      tooltip: {...tt, callbacks: {label: ctx => 'Unanswered 14+d: ' + ctx.raw + ' tickets'}}
+    },
+    scales: {x: xA, y: {...yB, min:0}}
+  }
+});
+</script>
+</body>
+</html>
